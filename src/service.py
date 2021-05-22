@@ -12,7 +12,7 @@ def upload(bucket,file,object):
 
     # Perform the transfer
     s3 = boto3.client('s3')
-    print('Uploading %s to Amazon S3 bucket %s' % (file, bucket))
+    print('Uploading %s to Amazon S3 bucket %s as %s' % (file, bucket,object))
     response = s3.upload_file(Filename=file, Bucket=bucket, Key=object, Config=config)
 
     print(response)
@@ -23,10 +23,12 @@ def upload(bucket,file,object):
     return response
 
 
-def check(file):
+def check_extension(file):
     """ Checks if the file type is correct """
     if file.lower().endswith('.tgz'):
         return True
+    else:
+        return False
 
 def list_files(bucket):
     """ list all Files """

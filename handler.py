@@ -1,19 +1,10 @@
 import json
 import sys
 import src.service
-
+import src.presigned
+from datetime import datetime
 bucket="cj-serverless-test"
 # file="/Users/cjain/serverless-uploder/serverless-uploader/src/service.py"
-
-def hello(event, context):
-    body = {
-        "message": "Serveless Test",
-        "input": event,
-    }
-    print(event)
-    response = {"statusCode": 200, "body": json.dumps(body)}
-
-    return response
 
 def list(event, context):    
     body = src.service.list_files(bucket)
@@ -23,30 +14,37 @@ def list(event, context):
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
-        'body': body,
+        'body': json.dumps(body),
         "isBase64Encoded": False
     }
 
 def upload(event, context):
-    if src.service.check_extension(event):
-        name=event.split("/")[-1]
-        src.service.upload(bucket,event,name)
+    print(event)
+    now = datetime.now()
+    x = now.strftime("%Y-%m-%-%H-%M-%S")
+
+    #name=event['body']['name'].split("/")[-1]
+    name=json.loads(event['body'])['name'].split("/")[-1]
+    print(name)
+    if src.service.check_extension(name):
+        response = src.presigned.create_presigned_post(bucket, x+"-"+name)
+        # src.service.upload(bucket,event['body'],name)
         return {
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': name,
+            'body': json.dumps(response),
             "isBase64Encoded": False
         }
     else:
         return {
-            'statusCode': 200,
+            'statusCode': 400,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': "Not Correct File Type. Expecting only .tgz",
+            'body': json.dumps({"message": "Not Correct File Type. Expecting only .tgz"}),
             "isBase64Encoded": False
         }

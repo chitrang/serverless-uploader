@@ -6,7 +6,23 @@ provider:
   name: aws
   runtime: python3.8
   lambdaHashingVersion: '20201221'
-
+  iam:
+    role:
+      statements:
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+          Resource:
+            Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::cj-serverless-test'
+        - Effect: 'Allow'
+          Action:
+            - 's3:*'
+          Resource:
+            Fn::Join:
+              - ''
+              - - 'arn:aws:s3:::cj-serverless-test/*'
 functions:
   hello:
     handler: handler.hello

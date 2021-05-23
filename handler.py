@@ -23,7 +23,7 @@ def list(event, context):
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
         },
-        'body': body,
+        'body': json.dumps(body),
         "isBase64Encoded": False
     }
 

@@ -1,18 +1,10 @@
 import json
 import sys
 import src.service
-
+import src.presigned
+from datetime import datetime
 bucket="cj-serverless-test"
 # file="/Users/cjain/serverless-uploder/serverless-uploader/src/service.py"
-
-def hello(event, context):
-    body = {
-        "message": "Serveless Test"
-    }
-    print(event)
-    response = {"statusCode": 200, "body": json.dumps(body)}
-
-    return response
 
 def list(event, context):    
     body = src.service.list_files(bucket)
@@ -27,16 +19,23 @@ def list(event, context):
     }
 
 def upload(event, context):
-    if src.service.check_extension(event['body']):
-        name=event['body'].split("/")[-1]
-        src.service.upload(bucket,event['body'],name)
+    print(event)
+    now = datetime.now()
+    x = now.strftime("%Y-%m-%-%H-%M-%S")
+
+    #name=event['body']['name'].split("/")[-1]
+    name=json.loads(event['body'])['name'].split("/")[-1]
+    print(name)
+    if src.service.check_extension(name):
+        response = src.presigned.create_presigned_post(bucket, x+"-"+name)
+        # src.service.upload(bucket,event['body'],name)
         return {
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': json.dumps({"Filename": name}),
+            'body': json.dumps(response),
             "isBase64Encoded": False
         }
     else:

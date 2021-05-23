@@ -2,6 +2,13 @@ service: serverless-uploader
 
 frameworkVersion: '2'
 
+# # custom:
+# #     pythonRequirements:
+# #     pythonBin: python3
+
+# plugins:
+#   - serverless-python-requirements
+
 provider:
   name: aws
   runtime: python3.8
@@ -24,12 +31,12 @@ provider:
               - ''
               - - 'arn:aws:s3:::cj-serverless-test/*'
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - http:
-          path: /
-          method: get
+  # hello:
+  #   handler: handler.hello
+  #   events:
+  #     - http:
+  #         path: /
+  #         method: get
   list:
     handler: handler.list
     events:

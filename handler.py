@@ -7,8 +7,7 @@ bucket="cj-serverless-test"
 
 def hello(event, context):
     body = {
-        "message": "Serveless Test",
-        "input": event,
+        "message": "Serveless Test"
     }
     print(event)
     response = {"statusCode": 200, "body": json.dumps(body)}
@@ -28,25 +27,25 @@ def list(event, context):
     }
 
 def upload(event, context):
-    if src.service.check_extension(event):
-        name=event.split("/")[-1]
-        src.service.upload(bucket,event,name)
+    if src.service.check_extension(event['body']):
+        name=event['body'].split("/")[-1]
+        src.service.upload(bucket,event['body'],name)
         return {
             'statusCode': 200,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': name,
+            'body': json.dumps({"Filename": name}),
             "isBase64Encoded": False
         }
     else:
         return {
-            'statusCode': 200,
+            'statusCode': 400,
             'headers': {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': "Not Correct File Type. Expecting only .tgz",
+            'body': json.dumps({"message": "Not Correct File Type. Expecting only .tgz"}),
             "isBase64Encoded": False
         }
